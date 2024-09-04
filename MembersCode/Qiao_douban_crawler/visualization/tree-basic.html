@@ -1,0 +1,192 @@
+
+<!DOCTYPE html>
+<html lang="en" style="height: 100%">
+<head>
+  <meta charset="utf-8">
+</head>
+<body style="height: 100%; margin: 0">
+  <div id="container" style="height: 100%"></div>
+
+  <script type="text/javascript" src="https://registry.npmmirror.com/jquery/3.7.1/files/dist/jquery.min.js"></script>
+  <script type="text/javascript" src="https://registry.npmmirror.com/echarts/5.5.1/files/dist/echarts.min.js"></script>
+
+
+  <script type="text/javascript">
+    var dom = document.getElementById('container');
+    var myChart = echarts.init(dom, null, {
+      renderer: 'canvas',
+      useDirtyRect: false
+    });
+    var app = {};
+
+    var option;
+    const data = {
+      name:"对俄乌冲突的看法",
+      children:[
+      
+  {
+    "name": "喜爱数：9 (1})",
+    "children": [
+      {
+        "name": "东京教父"
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：9.7 (1})",
+    "children": [
+      {
+        "name": "肖申克的救赎"
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：9.6 (1})",
+    "children": [
+      {
+        "name": "茶馆"
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：9.5 (1})",
+    "children": [
+      {
+        "name": "高山下的花环"
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：9.4 (1})",
+    "children": [
+      {
+        "name": "大闹天宫"
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：9.3 (1})",
+    "children": [
+      {
+        "name": "芙蓉镇"
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：9.2 (1})",
+    "children": [
+      {
+        "name": "忠犬八公物语"
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：9.1 (1})",
+    "children": [
+      {
+        "name": "雨中曲"
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：8.9 (1})",
+    "children": [
+      {
+        "name": "隐藏人物"
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：8.8 (1})",
+    "children": [
+      {
+        "name": "魂断蓝桥"
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：8.7 (1})",
+    "children": [
+      {
+        "name": "弱点"
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：8.6 (1})",
+    "children": [
+      {
+        "name": "朗读者"
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：8.5 (1})",
+    "children": [
+      {
+        "name": "冰雪奇缘"
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：8.4 (1})",
+    "children": [
+      {
+        "name": "爱乐之城"
+      }
+    ]
+  }
+]
+    }
+
+    myChart.showLoading();
+  //  https://echarts.apache.org/examples/data/asset/data/flare.json
+    myChart.hideLoading();
+
+    myChart.setOption(
+      (option = {
+        tooltip: {
+          trigger: 'item',
+          triggerOn: 'mousemove'
+        },
+        series: [
+          {
+            type: 'tree',
+            data: [data],
+            top: '1%',
+            left: '7%',
+            bottom: '1%',
+            right: '20%',
+            symbolSize: 7,
+            label: {
+              position: 'left',
+              verticalAlign: 'middle',
+              align: 'right',
+              fontSize: 9
+            },
+            leaves: {
+              label: {
+                position: 'right',
+                verticalAlign: 'middle',
+                align: 'left'
+              }
+            },
+            emphasis: {
+              focus: 'descendant'
+            },
+            expandAndCollapse: true,
+            animationDuration: 550,
+            animationDurationUpdate: 750
+          }
+        ]
+      })
+    );
+
+    if (option && typeof option === 'object') {
+      myChart.setOption(option);
+    }
+
+    window.addEventListener('resize', myChart.resize);
+  </script>
+</body>
+</html>

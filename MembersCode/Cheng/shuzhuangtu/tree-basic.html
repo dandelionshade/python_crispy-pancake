@@ -1,0 +1,234 @@
+
+<!DOCTYPE html>
+<html lang="en" style="height: 100%">
+<head>
+  <meta charset="utf-8">
+</head>
+<body style="height: 100%; margin: 0">
+  <div id="container" style="height: 100%"></div>
+
+  <script type="text/javascript" src="https://registry.npmmirror.com/jquery/3.7.1/files/dist/jquery.min.js"></script>
+  <script type="text/javascript" src="https://registry.npmmirror.com/echarts/5.5.1/files/dist/echarts.min.js"></script>
+
+
+  <script type="text/javascript">
+    var dom = document.getElementById('container');
+    var myChart = echarts.init(dom, null, {
+      renderer: 'canvas',
+      useDirtyRect: false
+    });
+    var app = {};
+
+    var option;
+    const data = {
+      name:"对俄乌冲突的看法",
+      children:[
+  {
+    "name": "喜爱数：1694喜欢 (1})",
+    "children": [
+      {
+        "name": " 三大消息：泽连斯基痛批蒙古！国防部警告日本！中国能结束冲突 #主持人雪莹  #达人带货看我  #大v快评 @快手主持人 @快手热点 @快手粉条 "
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：353喜欢 (1})",
+    "children": [
+      {
+        "name": " 乌克兰攻入俄本土近一月，持续践踏俄红线，俄罗斯核威慑逐步失效&nbsp;#快手热评&nbsp; "
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：7529喜欢 (1})",
+    "children": [
+      {
+        "name": " 俄军击落158架无人机，易攻难防窗口中国可用 #无人机&nbsp; #军迷集结号  #以热血敬山河 "
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：1.1万喜欢 (1})",
+    "children": [
+      {
+        "name": " #杨轶 #新知创作人 #俄乌冲突 @快手热点 @快手创作者中心 @快手粉条 "
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：5085喜欢 (1})",
+    "children": [
+      {
+        "name": " 形势恶化！俄罗斯突发三战预警，核战真要来了？ #主持人说新闻 #主播说新闻 #国际局势 @快手粉条 @快手主持人 @快手热点 "
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：3109喜欢 (1})",
+    "children": [
+      {
+        "name": " 美国三大坏消息：正走向破产！发生严重枪击事件！将卷入全球冲突 #主持人雪莹  #主播说新闻  #大v快评 @快手粉条 @快手热点 @快手主持人 "
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：548喜欢 (1})",
+    "children": [
+      {
+        "name": " 普京抵达蒙古国\n泽连斯基要求\n逮捕普京 @快手主持人 @快手热点 @快手粉条 #小柏说天下 #快影万粉扶持计划 #主持人民生观察团 "
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：2.2万喜欢 (2})",
+    "children": [
+      {
+        "name": " 俄再对乌发动大规模空袭 双方一天发生170次战斗#俄乌冲突  #俄罗斯袭击乌克兰基辅  #乌克兰袭击俄城市 "
+      },
+      {
+        "name": " 乌军视角：俄乌部队在基辅附近一村庄外爆发激战，乌士兵遭遇坦克边打边撤 #俄乌冲突  #战争 &nbsp; "
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：7万喜欢 (1})",
+    "children": [
+      {
+        "name": " 多名乌军士兵在扎波罗热方投降，放下武器高举双手走向俄军，俄士兵全程持枪警戒&nbsp;#俄乌冲突&nbsp;#俄罗斯&nbsp;#乌克兰&nbsp; "
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：2.8万喜欢 (1})",
+    "children": [
+      {
+        "name": " 俄重伤士兵从巴赫姆特战场死里逃生，腿上竟卡着一枚30毫米的炮弹，随时可能爆炸#俄乌冲突  #俄乌战争  #乌克兰 "
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：3万喜欢 (1})",
+    "children": [
+      {
+        "name": " 爆炸第一视角！近日，俄乌前线，乌军装甲车在行驶时突然遇袭，士兵扫射反击时触发地雷......#俄乌冲突  #战场前线  #和平 "
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：8.8万喜欢 (1})",
+    "children": [
+      {
+        "name": " 闪避点满！俄军士兵遭乌无人机袭击期间左右躲闪，成功误导乌军操作手最终捡回一命&nbsp;&nbsp;#俄乌冲突&nbsp;#战场录像&nbsp;#俄罗斯&nbsp; "
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：3.1万喜欢 (1})",
+    "children": [
+      {
+        "name": " 车队遭遇乌军伏击！俄军机枪手向敌猛烈扫射，强忍着手指疼痛给机枪换弹接着打 #俄乌冲突 &nbsp; "
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：2.4万喜欢 (1})",
+    "children": [
+      {
+        "name": " 全然不知已被监视！乌军9人小队战场扎堆试图进攻，俄无人机发动袭击正中人群&nbsp;#俄乌冲突&nbsp;#无人机&nbsp; "
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：5.6万喜欢 (1})",
+    "children": [
+      {
+        "name": " 剧情续上了？疑似被坦克近距离轰杀的乌军士兵生前最后画面曝光，更多细节指向“友军误击” #俄乌冲突 &nbsp; "
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：9.9万喜欢 (1})",
+    "children": [
+      {
+        "name": " 乌军士兵在俄遗弃装甲车旁“舔包”，向迎面驶来的“友军坦克”招手，不料却被对方一炮送走 #俄乌冲突 &nbsp; "
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：23.3万喜欢 (1})",
+    "children": [
+      {
+        "name": " “我们尽力了”：俄军特种部队奋力抢救乌军伤兵，对方接受包扎时面露恐惧，最终却仍难逃死亡命运 #俄乌冲突 &nbsp; "
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：37.2万喜欢 (1})",
+    "children": [
+      {
+        "name": " 运气就是这么好！乌军无人机2次投弹，都被受伤俄军捡起扔掉#俄乌战场&nbsp;#俄乌冲突&nbsp;&nbsp; "
+      }
+    ]
+  },
+  {
+    "name": "喜爱数：13.9万喜欢 (1})",
+    "children": [
+      {
+        "name": " 下手够狠！俄车臣部队暴打亚速营：向对方地下掩体扫射后狂扔手雷，炸完接着补枪，最终无伤攻占据点 #俄乌冲突  #车臣  #亚速营 &nbsp; "
+      }
+    ]
+  }
+]
+    }
+
+    myChart.showLoading();
+  //  https://echarts.apache.org/examples/data/asset/data/flare.json
+    myChart.hideLoading();
+
+    myChart.setOption(
+      (option = {
+        tooltip: {
+          trigger: 'item',
+          triggerOn: 'mousemove'
+        },
+        series: [
+          {
+            type: 'tree',
+            data: [data],
+            top: '1%',
+            left: '7%',
+            bottom: '1%',
+            right: '20%',
+            symbolSize: 7,
+            label: {
+              position: 'left',
+              verticalAlign: 'middle',
+              align: 'right',
+              fontSize: 9
+            },
+            leaves: {
+              label: {
+                position: 'right',
+                verticalAlign: 'middle',
+                align: 'left'
+              }
+            },
+            emphasis: {
+              focus: 'descendant'
+            },
+            expandAndCollapse: true,
+            animationDuration: 550,
+            animationDurationUpdate: 750
+          }
+        ]
+      })
+    );
+
+    if (option && typeof option === 'object') {
+      myChart.setOption(option);
+    }
+
+    window.addEventListener('resize', myChart.resize);
+  </script>
+</body>
+</html>

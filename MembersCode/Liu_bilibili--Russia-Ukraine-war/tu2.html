@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en" style="height: 100%">
+<head>
+  <meta charset="utf-8">
+  <title>播放量柱状图</title>
+</head>
+<body style="height: 100%; margin: 0">
+  <div id="container" style="height: 100%"></div>
+
+  <script type="text/javascript" src="https://registry.npmmirror.com/echarts/5.5.1/files/dist/echarts.min.js"></script>
+
+  <script type="text/javascript">
+    var dom = document.getElementById('container');
+    var myChart = echarts.init(dom, null, {
+      renderer: 'canvas',
+      useDirtyRect: false
+    });
+    var app = {};
+    
+    var option;
+
+    // 假设这是从 JSON 文件中读取的处理后数据
+    var data = [
+    {
+        "title": "9月2日俄乌战况解析；莫斯科五要地遭遇重袭，克宫报复刺激西方彻底解限！",
+        "bofangliang": "34001"
+    },
+    {
+        "title": "二十分钟带您看懂俄乌战争的起因",
+        "bofangliang": "8573"
+    },
+    {
+        "title": "俄乌战争、伊朗以色列战争如何揭示西方安全框架崩溃",
+        "bofangliang": "5779"
+    },
+    {
+        "title": "“没有人生来是耗材。”俄军拍摄残酷，冰冷至极的战后画面，乌军货物 200 尸横遍野，生命的消失让人难以言表",
+        "bofangliang": "787001"
+    },
+    {
+        "title": "战线地图看不懂？一个视频带你全面了解当前俄乌战争态势！全面解读。",
+        "bofangliang": "23001"
+    },
+    {
+        "title": "240902(2)俄乌沙盘-库尔斯克战役新阶段：第一个突出部反攻！为何没有达成战略目标？ 邱世卿合订本",
+        "bofangliang": "1320"
+    },
+    {
+        "title": "乌军在波克罗夫斯克方向兵败如山倒！而乌军在库尔斯克的增援还在不停的抵达！",
+        "bofangliang": "11001"
+    },
+    {
+        "title": "“你不相信眼泪，因为他毫无用处……”乌军大量伏击俄军装甲车辆，击毙与俘虏了大量俄军士 兵。俄乌残酷巷战、垫壕战纪时，俄军200号货物新老合集",
+        "bofangliang": "107"
+    },
+    {
+        "title": "9月3日：加沙疫苗接种情况-俄乌战争最新消息-国际最新新闻",
+        "bofangliang": "191"
+    },
+    {
+        "title": "【俄乌沙盘】不在公园下象棋去打仗？乌军老龄化严重 卡里夫卡被攻占！",
+        "bofangliang": "337001"
+    },
+    {
+        "title": "240902(1)俄乌战役视角大图总览，一周总结。  邱世卿合订本",
+        "bofangliang": "720"
+    },
+    {
+        "title": "俄罗斯向南看：普京访问阿塞拜疆，俄乌与中东成为一盘棋！",
+        "bofangliang": "81001"
+    },
+    {
+        "title": "9月3日俄乌局势研判：俄军狠起来自己地盘都轰炸；乌军损失知多少",
+        "bofangliang": "3469"
+    },
+    {
+        "title": "真电子榨菜！纯中文版俄乌冲突629天动画，所有信息都是中文，包括事件说明、控制区域和军队兵力，10分钟看完两年所有俄乌情况",
+        "bofangliang": "646001"
+    },
+    {
+        "title": "马克龙公开俄乌战争前劝普京绝密通话",
+        "bofangliang": "27001"
+    },
+    {
+        "title": "俄乌战争长期化：三国受益，三国受害",
+        "bofangliang": "134001"
+    },
+    {
+        "title": "俄乌战争、伊朗以色列战争如何揭示西方安全框架崩溃",
+        "bofangliang": "1744"
+    },
+    {
+        "title": "无人收尸，最终化为枯骨……俄乌残酷巷战、堑壕战纪实。遍地的乌军200号货物，他们的亲人再也不会见到他们，甚至可能不会收到他们死亡的通知，只会被告知他们“失踪”了",
+        "bofangliang": "155001"
+    },
+    {
+        "title": "对俄罗斯分析的最到位的专家了，没有之一",
+        "bofangliang": "519001"
+    },
+    {
+        "title": "【高清中字】下车就中弹！脸部中弹！被火炮炸懵！乌军精锐亚速第三突击旅在哈尔科夫的艰难战斗！",
+        "bofangliang": "87001"
+    },
+    {
+        "title": "俄乌双方抢夺阵地激烈交战。真实战场第一人称射击",
+        "bofangliang": "1"
+    },
+    {
+        "title": "俄乌战争两年多，回顾中国大噶们的言论观点",
+        "bofangliang": "76001"
+    },
+    {
+        "title": "9月3日早间，以色列70万人大罢工愈演愈烈，事件起因为在加沙地带被发现6具刚被处决不久的人质尸体，预计今年将会有40万乌克兰人因停电离开乌克兰",
+        "bofangliang": "4358"
+    },
+    {
+        "title": "“你不相信眼泪，因为它毫无用处……”俄军在库尔斯克伏击乌军装甲车辆，击毙与俘虏了大量乌军士兵。俄乌残酷巷战、堑壕战纪实，乌军200号货物新老合集。",
+        "bofangliang": "291001"
+    },
+    {
+        "title": "看懂俄乌战争必知的内容，乌克兰30年衰落史【有机社会】",
+        "bofangliang": "3417001"
+    },
+    {
+        "title": "俄军在顿巴斯方向势如破竹，乌军挡不住啊！库尔斯克区域俄军的猎杀还在继续！",
+        "bofangliang": "38001"
+    },
+    {
+        "title": "俄乌战争时间轴：2014-2024大事记！1小时22分有多长？",
+        "bofangliang": "105001"
+    },
+    {
+        "title": "转发：军事博主Military Summary240903俄乌战争更新",
+        "bofangliang": "5"
+    },
+    {
+        "title": "2024年最新-俄乌战争真实录像05-俄军集团军战斗实录，突击小队战壕激烈交战，战术小队巷战进攻画面，俄乌战场第一视角，战场一手真实影像集锦【中文字幕】",
+        "bofangliang": "139001"
+    },
+    {
+        "title": "炸裂！北约公开下场！俄罗斯多地遭袭！乌克兰开始全面大反攻！",
+        "bofangliang": "12001"
+    },
+    {
+        "title": "打成这样真不能怪普京，俄乌战争到底多残酷？已打光8个印度陆军",
+        "bofangliang": "3904"
+    },
+    {
+        "title": "步战车开门就被扫射，乌军士兵命丧当场，亚速营最后的疯狂",
+        "bofangliang": "296001"
+    },
+    {
+        "title": "俄乌战争-谷歌地球动态（截止2024.9.1）",
+        "bofangliang": "5094"
+    },
+    {
+        "title": "日媒设圈套采访中国人俄乌战争看法。中国人不上套！",
+        "bofangliang": "587001"
+    },
+    {
+        "title": "最新俄乌战争实录画面，部分画面请选择性观看。",
+        "bofangliang": "126001"
+    },
+    {
+        "title": "乌军反攻哈尔科夫，想佯攻后引蛇出洞，结果引来了大炮",
+        "bofangliang": "37001"
+    },
+    {
+        "title": "俄乌战争最新消息：白俄罗斯首次出手 摧毁塞姆河所有浮桥桥梁 西尔斯基派出7个旅增援红军村",
+        "bofangliang": "11001"
+    },
+    {
+        "title": "［俄乌战争：激战赫尔松］赫尔松是如何夺取和失去的？回顾2022年俄乌战争最大的反攻战役之一",
+        "bofangliang": "311001"
+    },
+    {
+        "title": "美国雇佣兵被俄军击毙，葬身异国他乡！俄乌残酷巷战、堑壕战纪实。数不尽的乌军200号货物，乌克兰在一声又一声的“大捷”中走向毁灭，这就是“自由民主”的“代价”……",
+        "bofangliang": "246001"
+    },
+    {
+        "title": "俄乌战争九月特别节目：俄军东部攻势能否改变战局？波克罗夫斯克战况分析",
+        "bofangliang": "3268"
+    },
+    {
+        "title": "死亡漫步，乌克兰无人机陪俄军走完人生最后一程",
+        "bofangliang": "139001"
+    },
+    {
+        "title": "俄乌战争爆发一年多以来双方战线变化图",
+        "bofangliang": "241001"
+    }
+];
+
+    // 从数据中提取图表所需的数据
+    var bofangliangs = data.map(item => parseInt(item.bofangliang, 10)); // 播放量数据
+    var titles = data.map(item => item.title);  // 视频标题
+
+    option = {
+      tooltip: {
+        trigger: 'axis',
+        formatter: function (params) {
+          // 提示框显示 title 和播放量
+          var index = params[0].dataIndex;
+          return `${titles[index]}<br/>播放量: ${bofangliangs[index]}`;
+        }
+      },
+      xAxis: {
+        type: 'category',
+        data: bofangliangs.map((_, i) => `视频 ${i + 1}`),  // 用 '视频 1', '视频 2' 等作为横轴数据
+        axisLabel: {
+          show: false  // 隐藏横轴标签
+        }
+      },
+      yAxis: {
+        type: 'value'
+      },
+      series: [
+        {
+          data: bofangliangs,  // 使用播放量作为系列数据
+          type: 'bar'
+        }
+      ]
+    };
+
+    if (option && typeof option === 'object') {
+      myChart.setOption(option);
+    }
+
+    window.addEventListener('resize', myChart.resize);
+  </script>
+</body>
+</html>

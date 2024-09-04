@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+    <style>
+
+        * {
+            margin:0;
+            padding:0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display:flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #1a252c;
+        }
+
+        #c {
+            position: absolute;
+            left:0 ;
+            top:0;
+            z-index: 1;
+        }
+
+        #mosaic {
+            position: absolute;
+            left:0 ;
+            top:0;
+        }
+    </style>
+    <body onload="main()">
+        <div id="container"></div>
+        <div style="display: flex;flex-direction: column;align-items: center;">
+            <input id="changesize" type="range" min="8" max="50" value="20" >
+            <canvas id="zoom" width="120" height="120"></canvas>
+        </div>
+    </body>
+</html>
+<script>
+document.querySelector("#back").addEventListener("click",() => {
+    document.location.href = "./index.html"
+})
+
+function main(){
+    const hoveredColor = document.getElementById('hovered-color');
+    const selectedColor = document.getElementById('selected-color');
+    let canvas, ctx, canvasM, ctxM;
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    // img.src = "https://picsum.photos/300/400";
+    img.src = "https://img.zcool.cn/community/0170585eb8e6efa8012148147f998e.jpg@3000w_1l_0o_100sh.jpg";
+    
+    let m_size = 50
+    
+    img.onload = () => {
+        // console.log(img.width,img.height)
+        document.querySelector("#container").style.width = img.width + "px"
+        document.querySelector("#container").style.height = img.height + "px"
+        document.querySelector("#container").style.position = "relative"
+
+        canvas = document.createElement("canvas")
+        canvasM = document.createElement("canvas")
+        document.querySelector("#container").appendChild(canvas)
+        document.querySelector("#container").appendChild(canvasM)
+
+        canvas.id = "c"
+        canvasM.id = "mosaic"
+        ctx = canvas.getContext("2d")
+        ctxM = canvasM.getContext("2d")
+        canvas.width = img.width
+        canvas.height = img.height
+        canvas.style.width = img.width + "px"
+        canvas.style.height = img.height + "px"
+        canvasM.width = img.width
+        canvasM.height = img.height
+        canvasM.style.width = img.width + "px"
+        canvasM.style.height = img.height + "px"
+        ctx.drawImage(img,0,0,img.width,img.height,0,0,canvas.width,canvas.height)
+        decrementOpactiy(ctx,img.width,img.height)
+
+        initM(ctxM,m_size)
+
+        canvas.addEventListener('mousemove', zoom);
+    }
+    
+    const data = [
+  {
+    title: ' 三大消息：泽连斯基痛批蒙古！国防部警告日本！中国能结束冲突 #主持人雪莹  #达人带货看我  #大v快评 @快手主持人 @快手热点 @快手粉条 ',
+    like: '3508喜欢',
+    img: 'https://p2.a.yximgs.com/upic/2024/09/04/07/BMjAyNDA5MDQwNzQyNDNfNTM2OTc0MTk4XzE0MjY3NTUxODk0NV8yXzM=_Ba467f7feb4be02e3f942b4a970aef942.jpg?tag=1-1725436726-xpcwebsearch-0-79vtjdsbdh-ab5c55d11c3419cf&clientCacheKey=3x36kkyn5fv7zvi.jpg&di=db9621c3&bp=10004'
+  },
+  {
+    title: ' #新知创作人 #杨轶 #俄乌冲突 @快手粉条 @快手热点 @快手创作者中心 ',
+    like: '1148喜欢',
+    img: 'https://p2.a.yximgs.com/upic/2024/09/04/11/BMjAyNDA5MDQxMTI2MDFfODE4NjQ3NTQxXzE0MjY4NjkxOTUyOF8yXzM=_Bfc7080f134d704369672248e9c7826ce.jpg?tag=1-1725436726-xpcwebsearch-0-c7ys74yxcb-25b9a32720e41955&clientCacheKey=3xx3fjsxfugs2bm.jpg&di=db9621c3&bp=10004'
+  },
+  {
+    title: ' 乌克兰攻入俄本土近一月，持续践踏俄红线，俄罗斯核威慑逐步失效&nbsp;#快手热评&nbsp; ',
+    like: '396喜欢',
+    img: 'https://p5.a.yximgs.com/upic/2024/09/03/14/BMjAyNDA5MDMxNDI3MTFfNTExNDk0OTgyXzE0MjYyNzU1NjMyOV8wXzM=_ccc_B9c01250a092075011d2e5e3a6d1603e5.jpg?tag=1-1725436726-xpcwebsearch-0-qwhn51i1ml-0c11f623ff90eb39&clientCacheKey=3xnnpzy5t36ngqi_ccc.jpg&di=db9621c3&bp=10004'
+  },
+  {
+    title: ' 莫迪撕下中立伪装，大批印度炮弹运往乌克兰，花的还是俄罗斯钱&nbsp;#快手热评&nbsp;&nbsp;#军迷集结号&nbsp; ',
+    like: '5678喜欢',
+    img: 'https://p2.a.yximgs.com/upic/2024/09/03/14/BMjAyNDA5MDMxNDA5MzlfMTA5OTkwNjE3NV8xNDI2MjY1OTUyMzJfMF8z_ccc_B6860bc9096a79147dc425d11ceea09d6.jpg?tag=1-1725436726-xpcwebsearch-0-p5t8n7dfwo-7ece2514a8f6a1d1&clientCacheKey=3xp7pjbdktevfuk_ccc.jpg&di=db9621c3&bp=10004'
+  },
+  {
+    title: ' 俄军击落158架无人机，易攻难防窗口中国可用 #无人机&nbsp; #军迷集结号  #以热血敬山河 ',
+    like: '7643喜欢',
+    img: 'https://p3.a.yximgs.com/upic/2024/09/02/17/BMjAyNDA5MDIxNzQwNDFfMTYzMjA1NzM2Ml8xNDI1NjgyODcxMzFfMF8z_Becf3db52430022038b3e8cd3dc856a8a.jpg?tag=1-1725436726-xpcwebsearch-0-wrstikv6ug-e46afb6b0d5ca7c8&clientCacheKey=3xsh44fkrszchns.jpg&di=db9621c3&bp=10004'
+  },
+  {
+    title: ' 美国三大坏消息：正走向破产！发生严重枪击事件！将卷入全球冲突 #主持人雪莹  #主播说新闻  #大v快评 @快手粉条 @快手热点 @快手主持人 ',
+    like: '3833喜欢',
+    img: 'https://p5.a.yximgs.com/upic/2024/09/03/15/BMjAyNDA5MDMxNTI3MzBfNTM2OTc0MTk4XzE0MjYzMDgwNzA2N18yXzM=_B2b91d4dc21371adb50415deda14cf80c.jpg?tag=1-1725436726-xpcwebsearch-0-pqsid0itdk-8670dcad657c4907&clientCacheKey=3xarvfa5mq2ep29.jpg&di=db9621c3&bp=10004'
+  },
+  {
+    title: ' #杨轶 #新知创作人 #俄乌冲突 @快手热点 @快手创作者中心 @快手粉条 ',
+    like: '1.2万喜欢',
+    img: 'https://p2.a.yximgs.com/upic/2024/09/02/23/BMjAyNDA5MDIyMzU0NThfODE4NjQ3NTQxXzE0MjU5NTE2MDkzN18yXzM=_Badd5829f3bc072b99abf8598555a6991.jpg?tag=1-1725436726-xpcwebsearch-0-rwx5ssmdtq-2dd405a9bba5867f&clientCacheKey=3xbzxxqt36wfx4c.jpg&di=db9621c3&bp=10004'
+  },
+  {
+    title: ' 形势恶化！俄罗斯突发三战预警，核战真要来了？ #主持人说新闻 #主播说新闻 #国际局势 @快手粉条 @快手主持人 @快手热点 ',
+    like: '5278喜欢',
+    img: 'https://p1.a.yximgs.com/upic/2024/09/03/14/BMjAyNDA5MDMxNDAxMjFfNjg3ODYwNTk0XzE0MjYyNjAwNjg0OV8xXzM=_B122eb586d7690286d126ba30bf8b6223.jpg?tag=1-1725436726-xpcwebsearch-0-iozwrag25y-79fdb17a1696c6a3&clientCacheKey=3x8g4zh4g3u3gx2.jpg&di=db9621c3&bp=10004'
+  },
+  {
+    title: ' 普京抵达蒙古国\n泽连斯基要求\n逮捕普京 @快手主持人 @快手热点 @快手粉条 #小柏说天下 #快影万粉扶持计划 #主持人民生观察团 ',
+    like: '637喜欢',
+    img: 'https://p5.a.yximgs.com/upic/2024/09/03/20/BMjAyNDA5MDMyMDQ1MDRfNjA1NzMxMDkyXzE0MjY1MjUyNDI0M18xXzM=_Bcae07a1bb944d447d30546c363dad0b9.jpg?tag=1-1725436726-xpcwebsearch-0-epymo79nkd-4b1e726686151229&clientCacheKey=3xd9qv2mujbkxp9.jpg&di=db9621c3&bp=10004'
+  },
+  {
+    title: ' 剧情续上了？疑似被坦克近距离轰杀的乌军士兵生前最后画面曝光，更多细节指向“友军误击” #俄乌冲突 &nbsp; ',
+    like: '5.6万喜欢',
+    img: 'https://p2.a.yximgs.com/upic/2022/04/13/14/BMjAyMjA0MTMxNDM3MDVfMTExMjQ1NDI5NV83MTk1Njc0NjkwMl8wXzM=_ccc_B6190fd330d37808a0ffd52526f3dc4e6.jpg?tag=1-1725436726-xpcwebsearch-0-nkfkpanfmm-22d8c642ae94ee36&clientCacheKey=3xhyeyegchud834_ccc.jpg&di=db9621c3&bp=10004'
+  },
+  {
+    title: ' 多名乌军士兵在扎波罗热方投降，放下武器高举双手走向俄军，俄士兵全程持枪警戒&nbsp;#俄乌冲突&nbsp;#俄罗斯&nbsp;#乌克兰&nbsp; ',
+    like: '7万喜欢',
+    img: 'https://p1.a.yximgs.com/upic/2024/01/17/10/BMjAyNDAxMTcxMDEwMDFfMTQ4NzM2NDIwOV8xMjIzMDg0Nzk0NjFfMF8z_ccc_Bb4beb37a5132d52d3c4f34e6d5e4b4c3.jpg?tag=1-1725436726-xpcwebsearch-0-8kz9wmlxnx-e7faceaf9f403d3d&clientCacheKey=3xr2nnrw2i9avrq_ccc.jpg&di=db9621c3&bp=10004'
+  },
+  {
+    title: ' 士兵被乌无人机炸断腿，因不愿做俘虏，将枪口对准了自己！#俄乌冲突  #俄乌每日局势  #致敬 ',
+    like: '24.8万喜欢',
+    img: 'https://p2.a.yximgs.com/upic/2023/06/24/16/BMjAyMzA2MjQxNjA3NDVfMzI5MTYzOTI2NF8xMDYzNDQxNjMxMjRfMF8z_ccc_B0edbe1d022a071c818fcde1dcacb13db.jpg?tag=1-1725436726-xpcwebsearch-0-s9wscsq4co-32216bb47219edfe&clientCacheKey=3xvnqqwhvew4zgs_ccc.jpg&di=db9621c3&bp=10004'
+  },
+  {
+    title: ' 乌军视角：俄乌部队在基辅附近一村庄外爆发激战，乌士兵遭遇坦克边打边撤 #俄乌冲突  #战争 &nbsp; ',
+    like: '2.2万喜欢',
+    img: 'https://s2-111422.kwimgs.com/kos/nlav111422/pc-vision/img/placeholder.5672c428.svg'
+  },
+  {
+    title: ' 爆炸第一视角！近日，俄乌前线，乌军装甲车在行驶时突然遇袭，士兵扫射反击时触发地雷......#俄乌冲突  #战场前线  #和平 ',
+    like: '3万喜欢',
+    img: 'https://s2-111422.kwimgs.com/kos/nlav111422/pc-vision/img/placeholder.5672c428.svg'
+  },
+  {
+    title: ' 闪避点满！俄军士兵遭乌无人机袭击期间左右躲闪，成功误导乌军操作手最终捡回一命&nbsp;&nbsp;#俄乌冲突&nbsp;#战场录像&nbsp;#俄罗斯&nbsp; ',
+    like: '8.8万喜欢',
+    img: 'https://s2-111422.kwimgs.com/kos/nlav111422/pc-vision/img/placeholder.5672c428.svg'
+  },
+  {
+    title: ' 车队遭遇乌军伏击！俄军机枪手向敌猛烈扫射，强忍着手指疼痛给机枪换弹接着打 #俄乌冲突 &nbsp; ',
+    like: '3.1万喜欢',
+    img: 'https://s2-111422.kwimgs.com/kos/nlav111422/pc-vision/img/placeholder.5672c428.svg'
+  },
+  {
+    title: ' 据《每日邮报》2月24日报道，特朗普接受电视台采访时，称俄乌冲突是因为自己没连任，随后被主持人切断连线。 ',
+    like: '25.4万喜欢',
+    img: 'https://s2-111422.kwimgs.com/kos/nlav111422/pc-vision/img/placeholder.5672c428.svg'
+  },
+  {
+    title: ' 重伤的乌克兰士兵被俄军俘虏，俄军边责怪边帮他们包扎“早点投降不就好了”，并帮助他们联系亲人报平安（来源国防时报）#俄乌冲突  #俄乌战争  #乌克兰 ',
+    like: '35.7万喜欢',
+    img: 'https://s2-111422.kwimgs.com/kos/nlav111422/pc-vision/img/placeholder.5672c428.svg'
+  },
+  {
+    title: ' 全然不知已被监视！乌军9人小队战场扎堆试图进攻，俄无人机发动袭击正中人群&nbsp;#俄乌冲突&nbsp;#无人机&nbsp; ',
+    like: '2.4万喜欢',
+    img: 'https://s2-111422.kwimgs.com/kos/nlav111422/pc-vision/img/placeholder.5672c428.svg'
+  },
+  {
+    title: ' 乌军士兵在俄遗弃装甲车旁“舔包”，向迎面驶来的“友军坦克”招手，不料却被对方一炮送走 #俄乌冲突 &nbsp; ',
+    like: '9.9万喜欢',
+    img: 'https://s2-111422.kwimgs.com/kos/nlav111422/pc-vision/img/placeholder.5672c428.svg'
+  }
+]
+ 
+    const initM = (ctx,size) => {
+        let i = 0 , data_idx = 0
+        const m_arr = new Array(Math.floor(canvasM.width * canvasM.height / (size*size)))
+        ctxM.clearRect(0,0,canvasM.width,canvasM.height);  
+        for(let y = 0 ; y <= canvasM.height ; y += size){
+            for(let x = 0 ; x <= canvasM.width ; x += size){
+                let index = i
+                m_arr[i] = new Image()
+                if(data_idx == data.length){
+                    data_idx = 0
+                }
+                m_arr[i].src = data[data_idx].img;
+                m_arr[i].onload = () => {
+                    // console.log(index)
+                    if(index < m_arr.length){
+                        // console.log(index)
+                        ctx.drawImage(m_arr[index],x,y,size,size)
+                    }
+                }
+                i++
+                data_idx++
+            }
+        }
+
+    }
+
+    const decrementOpactiy = (ctx,w,h) => {
+        const imgdata = ctx.getImageData(0,0,w,h);
+        const pixel = imgdata.data;
+        for(let i = 0 ; i<pixel.length ; i+=4){
+            pixel[i+3] = 190
+        }
+        ctx.putImageData(imgdata,0,0)
+    }
+
+    var zoomctx = document.getElementById('zoom').getContext('2d');
+    var zoom = function(event) {
+        ctxM.imageSmoothingEnabled = this.checked;
+        ctxM.mozImageSmoothingEnabled = this.checked;
+        ctxM.webkitImageSmoothingEnabled = this.checked;
+        ctxM.msImageSmoothingEnabled = this.checked;
+        var x = event.layerX;
+        var y = event.layerY;
+        zoomctx.drawImage(canvasM,
+                        Math.abs(x - 5),
+                        Math.abs(y - 5),
+                        m_size, m_size,
+                        0, 0,
+                        150, 150);
+    };
+
+    document.getElementById("changesize").addEventListener("change",e => {
+        // console.log(e.target.value)
+        m_size = e.target.value
+        initM(ctxM,parseInt(m_size))
+    }) 
+}
+
+
+
+</script>

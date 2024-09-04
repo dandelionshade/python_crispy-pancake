@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+    <style>
+
+        * {
+            margin:0;
+            padding:0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display:flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #1a252c;
+        }
+
+        #c {
+            position: absolute;
+            left:0 ;
+            top:0;
+            z-index: 1;
+        }
+
+        #mosaic {
+            position: absolute;
+            left:0 ;
+            top:0;
+        }
+    </style>
+    <body onload="main()">
+        <div id="container"></div>
+        <div style="display: flex;flex-direction: column;align-items: center;">
+            <input id="changesize" type="range" min="8" max="50" value="20" >
+            <canvas id="zoom" width="120" height="120"></canvas>
+        </div>
+    </body>
+</html>
+<script>
+document.querySelector("#back").addEventListener("click",() => {
+    document.location.href = "./index.html"
+})
+
+function main(){
+    const hoveredColor = document.getElementById('hovered-color');
+    const selectedColor = document.getElementById('selected-color');
+    let canvas, ctx, canvasM, ctxM;
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    // img.src = "https://picsum.photos/300/400";
+    img.src = "https://bpic.588ku.com/back_origin_min_pic/19/04/12/82f336f04e1c4fc7a9f9b14a1a6b3a46.jpg";
+    
+    let m_size = 50
+    
+    img.onload = () => {
+        // console.log(img.width,img.height)
+        document.querySelector("#container").style.width = img.width + "px"
+        document.querySelector("#container").style.height = img.height + "px"
+        document.querySelector("#container").style.position = "relative"
+
+        canvas = document.createElement("canvas")
+        canvasM = document.createElement("canvas")
+        document.querySelector("#container").appendChild(canvas)
+        document.querySelector("#container").appendChild(canvasM)
+
+        canvas.id = "c"
+        canvasM.id = "mosaic"
+        ctx = canvas.getContext("2d")
+        ctxM = canvasM.getContext("2d")
+        canvas.width = img.width
+        canvas.height = img.height
+        canvas.style.width = img.width + "px"
+        canvas.style.height = img.height + "px"
+        canvasM.width = img.width
+        canvasM.height = img.height
+        canvasM.style.width = img.width + "px"
+        canvasM.style.height = img.height + "px"
+        ctx.drawImage(img,0,0,img.width,img.height,0,0,canvas.width,canvas.height)
+        decrementOpactiy(ctx,img.width,img.height)
+
+        initM(ctxM,m_size)
+
+        canvas.addEventListener('mousemove', zoom);
+    }
+    
+    const data = [
+    {
+    "title": "9月4日俄乌战况解析；乌克兰遭最血腥袭击，俄将助乌完成绝杀！美援乌远程导弹即将到位！",
+    "bofangliang": "7597",
+    "Time": "07:36",
+    "author": "天道宇同",
+    "img": "https://i0.hdslb.com/bfs/archive/935174d442af0aa256e594cceb0f62198854c0a8.jpg@672w_378h_1c_!web-search-common-cover"
+  },
+  {
+    "title": "二十分钟带您看懂俄乌战争的起因",
+    "bofangliang": "1.2万",
+    "Time": "21:25",
+    "author": "跳跳在爬",
+    "img": "https://i2.hdslb.com/bfs/archive/57ef480dea94cb1ad13e12b493d7d1d8402c5723.jpg@672w_378h_1c_!web-search-common-cover"
+  },
+  {
+    "title": "俄乌战争、伊朗以色列战争如何揭示西方安全框架崩溃",
+    "bofangliang": "6236",
+    "Time": "",
+    "author": "多极化世界百科",
+    "img": "https://archive.biliimg.com/bfs/archive/2cc8e45cefdff03617bac756b15deaaf02fc6cdf.jpg@672w_378h_1c_!web-search-common-cover"
+  },
+  {
+    "title": "“没有人生来是耗材。”俄军拍摄残酷，冰冷至极的战后画面，乌军货物 200 尸横遍野，生命的消失让人难以言表",
+    "bofangliang": "79.5万",
+    "Time": "13:14",
+    "author": "FCObersvation",
+    "img": "https://i2.hdslb.com/bfs/archive/27a3ea810ae5c769373f1accecc97ffc4af9fdf6.jpg@672w_378h_1c_!web-search-common-cover"
+  },
+  {
+    "title": "【俄乌沙盘】坚定守住就有办法！谢利多沃激战 弗勒达即将沦陷？",
+    "bofangliang": "6.9万",
+    "Time": "09:57",
+    "author": "钢铁战线参谋部",
+    "img": "https://i2.hdslb.com/bfs/archive/3f618515190cd40a1c946b241976af1a4a5c5125.jpg@672w_378h_1c_!web-search-common-cover"
+  },
+  {
+    "title": "俄军进行围点打援，乌军支援小队被打得仅剩3个残兵",
+    "bofangliang": "43.5万",
+    "Time": "11:16",
+    "author": "糟糕的历史-听文知",
+    "img": "https://i1.hdslb.com/bfs/archive/b22fef5b9d01b40035420311cfca8c4a04d9d06f.jpg@672w_378h_1c_!web-search-common-cover"
+  },
+  {
+    "title": "真电子榨菜！纯中文版俄乌冲突629天动画，所有信息都是中文，包括事件说明、控制区域和军队兵力，10分钟看完两年所有俄乌情况",
+    "bofangliang": "64.7万",
+    "Time": "12:50",
+    "author": "蜗牛柯基weibo",
+    "img": "https://i0.hdslb.com/bfs/archive/44397cd14da5f7320c9c7b50cd4e6f8605599041.jpg@672w_378h_1c_!web-search-common-cover"
+  },
+  {
+    "title": "俄乌战争：9月4日最新战况更新。俄军导弹袭击乌克兰波尔塔瓦，乌军库尔斯克继续进攻",
+    "bofangliang": "724",
+    "Time": "07:32",
+    "author": "窄门Alisha",
+    "img": "https://i2.hdslb.com/bfs/archive/d9c0f8eae00ab2754411fb5d9eb861fafcd05515.jpg@672w_378h_1c_!web-search-common-cover"
+  },
+  {
+    "title": "俄乌战争：库尔斯克战役详解，乌克兰的入侵究竟意味着什么？",
+    "bofangliang": "1571",
+    "Time": "27:24",
+    "author": "窄门Alisha",
+    "img": "https://i1.hdslb.com/bfs/archive/51d1a6bfa6f7c7d6e8bd4469caf6f86417d46f28.jpg@672w_378h_1c_!web-search-common-cover"
+  },
+  {
+    "title": "9月3日俄乌战况解析；乌军在俄境突控多个区域，东线焦点阻击有效！俄国及其盟友玩火！",
+    "bofangliang": "3.1万",
+    "Time": "04:45",
+    "author": "天道宇同",
+    "img": "https://i2.hdslb.com/bfs/archive/d07292d9587618513555515a146fd2819baaf544.jpg@672w_378h_1c_!web-search-common-cover"
+  },
+  {
+    "title": "乌克兰驻日本大使“拜鬼”！而且还选在9月3日！9月3日是中国人民抗日战争暨世界反法西斯战争胜利79周年纪念日",
+    "bofangliang": "2.5万",
+    "Time": "00:53",
+    "author": "鹤林文",
+    "img": "https://i2.hdslb.com/bfs/archive/13818cdeecb94b1d2c5a260ed70d5bd5bfabf984.jpg@672w_378h_1c_!web-search-common-cover"
+  },
+  {
+    "title": "9月4日中午，乌克兰波尔塔瓦遭到导弹袭击现场已确认51人死亡200多人受伤，俄罗斯向美国和北约发出警告如果使用西方武器打击俄罗斯纵深地区其后果将影响大西洋两岸",
+    "bofangliang": "3668",
+    "Time": "01:55",
+    "author": "猴哥说军情再探再报",
+    "img": "https://i2.hdslb.com/bfs/archive/fd4d96a6f032854b156b74ad8970c09554cbfdb8.jpg@672w_378h_1c_!web-search-common-cover"
+  },
+  {
+    "title": "俄乌战争、伊朗以色列战争如何揭示西方安全框架崩溃",
+    "bofangliang": "1849",
+    "Time": "",
+    "author": "哆吉课堂",
+    "img": "https://archive.biliimg.com/bfs/archive/2cc8e45cefdff03617bac756b15deaaf02fc6cdf.jpg@672w_378h_1c_!web-search-common-cover"
+  },
+  {
+    "title": "【9.4日最新】乌克兰驻日大使参拜神厕！？ 俄军打击乌军事训练营，造成超250人伤亡；多名乌高官同日辞职！，中俄及塞尔维亚将在东方经济论坛期间会晤！",
+    "bofangliang": "5.3万",
+    "Time": "04:06",
+    "author": "军情D7处",
+    "img": "https://i1.hdslb.com/bfs/archive/6a61e201fe5813db42b54c9cf9531cc2d4073ce0.jpg@672w_378h_1c_!web-search-common-cover"
+  },
+  {
+    "title": "南顿涅茨克绞肉机 伊斯坎德尔简政放权  俄第12总局出没",
+    "bofangliang": "4.2万",
+    "Time": "14:16",
+    "author": "子牧野",
+    "img": "https://i2.hdslb.com/bfs/archive/cc8b7eafc024199e7977e1fbd47971ea75372a3f.jpg@672w_378h_1c_!web-search-common-cover"
+  },
+  {
+    "title": "战线地图看不懂？一个视频带你全面了解当前俄乌战争态势！全面解读。",
+    "bofangliang": "3.5万",
+    "Time": "27:28",
+    "author": "方泽郎",
+    "img": "https://i1.hdslb.com/bfs/archive/274798218826e8614a88a17a2fbe31c012e5755d.jpg@672w_378h_1c_!web-search-common-cover"
+  },
+  {
+    "title": "俄乌战争长期化：三国受益，三国受害",
+    "bofangliang": "14.1万",
+    "Time": "16:14",
+    "author": "江平舟",
+    "img": "https://i0.hdslb.com/bfs/archive/1cc85b8d9e836d31cdc363f03b358995584cee45.jpg@672w_378h_1c_!web-search-common-cover"
+  },
+  {
+    "title": "马克龙公开俄乌战争前劝普京绝密通话",
+    "bofangliang": "3.3万",
+    "Time": "25:06",
+    "author": "中国兄弟会",
+    "img": "https://i2.hdslb.com/bfs/archive/48f29ae0542c1637df80396d5fbb7fc7366f5808.jpg@672w_378h_1c_!web-search-common-cover"
+  },
+  {
+    "title": "败局已定，泽连斯基突袭俄罗斯本土库尔斯克，虽战术层面暂有斩获，但战略全局之败象渐显",
+    "bofangliang": "358",
+    "Time": "06:21",
+    "author": "小叨同学叨逼叨",
+    "img": "https://i1.hdslb.com/bfs/archive/d9f8e0a82abda830b53ea02fad26779310cb9e14.jpg@672w_378h_1c_!web-search-common-cover"
+  },
+  {
+    "title": "俄乌战争-谷歌地球动态（截止2024.9.1）",
+    "bofangliang": "6941",
+    "Time": "08:09",
+    "author": "吴吴李李-",
+    "img": "https://i1.hdslb.com/bfs/archive/d83654bb332496d5dfa36108204a5071e68fa349.jpg@672w_378h_1c_!web-search-common-cover"
+  },
+  {
+    "title": "无人收尸，最终化为枯骨……俄乌残酷巷战、堑壕战纪实。遍地的乌军200号货物，他们的亲人再也不会见到他们，甚至可能不会收到他们死亡的通知，只会被告知他们“失踪”了",
+    "bofangliang": "15.5万",
+    "Time": "11:05",
+    "author": "GAKA是永远的太阳",
+    "img": "https://i1.hdslb.com/bfs/archive/bc402725b34891c5d3303cd6cb195242a4d2ccc4.jpg@672w_378h_1c_!web-search-common-cover"
+  },
+  {
+    "title": "库尔斯克当地民众将入侵乌军吊死在路灯上！俄军在库尔斯克近距离伏击乌军进攻部队，击毙大量乌军士兵！俄军使用无人机投弹与自杀式无人机猎杀乌军装甲车辆与步兵集锦。",
+    "bofangliang": "44.8万",
+    "Time": "25:32",
+    "author": "GAKA是永远的太阳",
+    "img": "https://i1.hdslb.com/bfs/archive/d1dc5034dd4b7dd97f1a074c809d7b96d3f6c119.jpg@672w_378h_1c_!web-search-common-cover"
+  },
+  {
+    "title": "北约电子战专家团灭！前线满战壕乌军雇佣兵残骸！",
+    "bofangliang": "3807",
+    "Time": "02:00",
+    "author": "亚欧瞭望纪事",
+    "img": "https://i2.hdslb.com/bfs/archive/2d19f9d3d707665bddc78485c0ec79aace94fc33.jpg@672w_378h_1c_!web-search-common-cover"
+  },
+  {
+    "title": "俄乌战争两年多，回顾中国大噶们的言论观点",
+    "bofangliang": "7.8万",
+    "Time": "07:10",
+    "author": "品历史HISTORY",
+    "img": "https://i1.hdslb.com/bfs/archive/4089cbdd626e7daaeb2decea63205c879b3df8c7.jpg@672w_378h_1c_!web-search-common-cover"
+  },
+  {
+    "title": "看懂俄乌战争必知的内容，乌克兰30年衰落史【有机社会】",
+    "bofangliang": "341.8万",
+    "Time": "23:20",
+    "author": "有机社会",
+    "img": "https://i1.hdslb.com/bfs/archive/c855a1820c0d5b2c4cdc90a5bb79bdc3fb0138fc.jpg@672w_378h_1c_!web-search-common-cover"
+  },
+  {
+    "title": "【环球大战线】张延廷&amp;介文汲&amp;庄伯仲   1、俄乌战争。2、普京访蒙。3、德国制造。0903",
+    "bofangliang": "183",
+    "Time": "53:05",
+    "author": "江上听涛",
+    "img": "https://i2.hdslb.com/bfs/archive/cf2deee0d9d3f4ee189626dbfe93b2a75d386141.jpg@672w_378h_1c_!web-search-common-cover"
+  }
+]
+ 
+    const initM = (ctx,size) => {
+        let i = 0 , data_idx = 0
+        const m_arr = new Array(Math.floor(canvasM.width * canvasM.height / (size*size)))
+        ctxM.clearRect(0,0,canvasM.width,canvasM.height);  
+        for(let y = 0 ; y <= canvasM.height ; y += size){
+            for(let x = 0 ; x <= canvasM.width ; x += size){
+                let index = i
+                m_arr[i] = new Image()
+                if(data_idx == data.length){
+                    data_idx = 0
+                }
+                m_arr[i].src = data[data_idx].img;
+                m_arr[i].onload = () => {
+                    // console.log(index)
+                    if(index < m_arr.length){
+                        // console.log(index)
+                        ctx.drawImage(m_arr[index],x,y,size,size)
+                    }
+                }
+                i++
+                data_idx++
+            }
+        }
+
+    }
+
+    const decrementOpactiy = (ctx,w,h) => {
+        const imgdata = ctx.getImageData(0,0,w,h);
+        const pixel = imgdata.data;
+        for(let i = 0 ; i<pixel.length ; i+=4){
+            pixel[i+3] = 190
+        }
+        ctx.putImageData(imgdata,0,0)
+    }
+
+    var zoomctx = document.getElementById('zoom').getContext('2d');
+    var zoom = function(event) {
+        ctxM.imageSmoothingEnabled = this.checked;
+        ctxM.mozImageSmoothingEnabled = this.checked;
+        ctxM.webkitImageSmoothingEnabled = this.checked;
+        ctxM.msImageSmoothingEnabled = this.checked;
+        var x = event.layerX;
+        var y = event.layerY;
+        zoomctx.drawImage(canvasM,
+                        Math.abs(x - 5),
+                        Math.abs(y - 5),
+                        m_size, m_size,
+                        0, 0,
+                        150, 150);
+    };
+
+    document.getElementById("changesize").addEventListener("change",e => {
+        // console.log(e.target.value)
+        m_size = e.target.value
+        initM(ctxM,parseInt(m_size))
+    }) 
+}
+
+
+
+</script>

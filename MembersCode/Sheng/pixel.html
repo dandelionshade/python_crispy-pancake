@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html>
+    <style>
+
+        * {
+            margin:0;
+            padding:0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display:flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #1a252c;
+        }
+
+        #c {
+            position: absolute;
+            left:0 ;
+            top:0;
+            z-index: 1;
+        }
+
+        #mosaic {
+            position: absolute;
+            left:0 ;
+            top:0;
+        }
+    </style>
+    <body onload="main()">
+        <div id="container"></div>
+        <div style="display: flex;flex-direction: column;align-items: center;">
+            <input id="changesize" type="range" min="8" max="50" value="20" >
+            <canvas id="zoom" width="120" height="120"></canvas>
+        </div>
+    </body>
+</html>
+<script>
+document.querySelector("#back").addEventListener("click",() => {
+    document.location.href = "./index.html"
+})
+
+function main(){
+    const hoveredColor = document.getElementById('hovered-color');
+    const selectedColor = document.getElementById('selected-color');
+    let canvas, ctx, canvasM, ctxM;
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    // img.src = "https://picsum.photos/300/400";
+    img.src = "https://ts1.cn.mm.bing.net/th/id/R-C.fed57bfd8e6205c7ad1e87822009b8b2?rik=dCA4TUIZqmpolQ&riu=http%3a%2f%2fpuui.qpic.cn%2fvpic_cover%2fe3335mmetkp%2fe3335mmetkp_hz.jpg%2f1280&ehk=reTnuBgZITiCk6ZdZDUnZUBpzAbZBjQKtpa55oarHUs%3d&risl=&pid=ImgRaw&r=0";
+    
+    let m_size = 50
+    
+    img.onload = () => {
+        // console.log(img.width,img.height)
+        document.querySelector("#container").style.width = img.width + "px"
+        document.querySelector("#container").style.height = img.height + "px"
+        document.querySelector("#container").style.position = "relative"
+
+        canvas = document.createElement("canvas")
+        canvasM = document.createElement("canvas")
+        document.querySelector("#container").appendChild(canvas)
+        document.querySelector("#container").appendChild(canvasM)
+
+        canvas.id = "c"
+        canvasM.id = "mosaic"
+        ctx = canvas.getContext("2d")
+        ctxM = canvasM.getContext("2d")
+        canvas.width = img.width
+        canvas.height = img.height
+        canvas.style.width = img.width + "px"
+        canvas.style.height = img.height + "px"
+        canvasM.width = img.width
+        canvasM.height = img.height
+        canvasM.style.width = img.width + "px"
+        canvasM.style.height = img.height + "px"
+        ctx.drawImage(img,0,0,img.width,img.height,0,0,canvas.width,canvas.height)
+        decrementOpactiy(ctx,img.width,img.height)
+
+        initM(ctxM,m_size)
+
+        canvas.addEventListener('mousemove', zoom);
+    }
+    
+    const data = [
+  {
+    "title": "小鱼桌游Wards二战卡牌桌游实体盲盒卡包零售收藏对战潮玩Kards",
+    "price": "19.7",
+    "img": "https://img.alicdn.com/bao/uploaded/i1/2266976084/O1CN019OJg8y1uoWZc6b0IC_!!2266976084.jpg"
+  },
+  {
+    "title": "KDL826泰坦电视人3.0闪电马桶人监控音响人儿童益智拼装积木玩具",
+    "price": "13",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/2215721772656/O1CN017BLrnt1VUUupmDfQT_!!2215721772656.jpg"
+  },
+  {
+    "title": "康佳筋膜枪肌肉按摩器仪迷你专业级肌膜抢mini男女电动放松颈膜枪",
+    "price": "309",
+    "img": "https://img.alicdn.com/bao/uploaded/i1/2208772006571/O1CN0101coaj1yPZPX2F6cY_!!0-item_pic.jpg"
+  },
+  {
+    "title": "垃圾桶家用厕所纸桶卫生间带盖大容量卫生桶夹缝壁挂客厅厨房纸篓",
+    "price": "8.5",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/2453904443/O1CN01hXklUr1igwdlpR78l_!!0-item_pic.jpg"
+  },
+  {
+    "title": "四季折叠加厚床垫地垫睡觉打地铺隔凉榻榻米软垫儿童爬行垫子家用",
+    "price": "55",
+    "img": "https://img.alicdn.com/bao/uploaded/i1/35934976/O1CN01CwwdAy1md3WNrowBb_!!35934976.jpg"
+  },
+  {
+    "title": "卫生间厕纸盒洗脸巾收纳盒壁挂式厕所纸巾盒抽纸高级感创意卷纸盒",
+    "price": "23.9",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/1038632524/O1CN01IDiFqD1UW2YmSb2Hg_!!1038632524.jpg"
+  },
+  {
+    "title": "初高中大学生行楷手写体练字帖女生漂亮字体成人励志语录央视文案",
+    "price": "21.8",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/2212268962601/O1CN01JQcscj1V5J5v4Cqte_!!0-item_pic.jpg"
+  },
+  {
+    "title": "小贝熊辅食机婴儿宝宝辅食工具套装料理机研磨打泥神器多功能",
+    "price": "79",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/2206212642944/O1CN01XQxrRC1XcOzAqVQDI_!!0-item_pic.jpg"
+  },
+  {
+    "title": "新房酒柜装饰品摆件家居招财猫客厅玄关电视柜工艺品乔迁新居礼物",
+    "price": "23",
+    "img": "https://img.alicdn.com/bao/uploaded/i3/2200705146448/O1CN015XyInx1xVElNX6Sdm_!!0-item_pic.jpg"
+  },
+  {
+    "title": "宝宝爬行垫加厚婴儿爬爬垫家用无毒无味定制拼接折叠儿童泡沫地垫",
+    "price": "9.8",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/1016568762/O1CN019ac1bE2Eb3JUcSojh_!!0-item_pic.jpg"
+  },
+  {
+    "title": "海南特产春光椰子饭538g礼盒方便食品速食原味文昌鸡味椰子饭三亚",
+    "price": "32.8",
+    "img": "https://img.alicdn.com/bao/uploaded/i3/1835819771/O1CN01rYbbyg2M3ArqJ8fut_!!2-item_pic.png"
+  },
+  {
+    "title": "科迪原生100%纯牛奶200mlx24盒整箱成人儿童学生早餐奶全脂鲜牛奶",
+    "price": "41",
+    "img": "https://img.alicdn.com/bao/uploaded/i2/1934042385/O1CN01xAtTEj1TUNMre68D8_!!1934042385.jpg"
+  },
+  {
+    "title": "小鱼桌游Wards二战卡牌桌游实体盲盒卡包零售收藏对战潮玩Kards",
+    "price": "19.7",
+    "img": "https://img.alicdn.com/bao/uploaded/i1/2266976084/O1CN019OJg8y1uoWZc6b0IC_!!2266976084.jpg"
+  },
+  {
+    "title": "KDL826泰坦电视人3.0闪电马桶人监控音响人儿童益智拼装积木玩具",
+    "price": "13",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/2215721772656/O1CN017BLrnt1VUUupmDfQT_!!2215721772656.jpg"
+  },
+  {
+    "title": "康佳筋膜枪肌肉按摩器仪迷你专业级肌膜抢mini男女电动放松颈膜枪",
+    "price": "309",
+    "img": "https://img.alicdn.com/bao/uploaded/i1/2208772006571/O1CN0101coaj1yPZPX2F6cY_!!0-item_pic.jpg"
+  },
+  {
+    "title": "垃圾桶家用厕所纸桶卫生间带盖大容量卫生桶夹缝壁挂客厅厨房纸篓",
+    "price": "8.5",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/2453904443/O1CN01hXklUr1igwdlpR78l_!!0-item_pic.jpg"
+  },
+  {
+    "title": "四季折叠加厚床垫地垫睡觉打地铺隔凉榻榻米软垫儿童爬行垫子家用",
+    "price": "55",
+    "img": "https://img.alicdn.com/bao/uploaded/i1/35934976/O1CN01CwwdAy1md3WNrowBb_!!35934976.jpg"
+  },
+  {
+    "title": "卫生间厕纸盒洗脸巾收纳盒壁挂式厕所纸巾盒抽纸高级感创意卷纸盒",
+    "price": "23.9",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/1038632524/O1CN01IDiFqD1UW2YmSb2Hg_!!1038632524.jpg"
+  },
+  {
+    "title": "初高中大学生行楷手写体练字帖女生漂亮字体成人励志语录央视文案",
+    "price": "21.8",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/2212268962601/O1CN01JQcscj1V5J5v4Cqte_!!0-item_pic.jpg"
+  },
+  {
+    "title": "小贝熊辅食机婴儿宝宝辅食工具套装料理机研磨打泥神器多功能",
+    "price": "79",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/2206212642944/O1CN01XQxrRC1XcOzAqVQDI_!!0-item_pic.jpg"
+  },
+  {
+    "title": "新房酒柜装饰品摆件家居招财猫客厅玄关电视柜工艺品乔迁新居礼物",
+    "price": "23",
+    "img": "https://img.alicdn.com/bao/uploaded/i3/2200705146448/O1CN015XyInx1xVElNX6Sdm_!!0-item_pic.jpg"
+  },
+  {
+    "title": "宝宝爬行垫加厚婴儿爬爬垫家用无毒无味定制拼接折叠儿童泡沫地垫",
+    "price": "9.8",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/1016568762/O1CN019ac1bE2Eb3JUcSojh_!!0-item_pic.jpg"
+  },
+  {
+    "title": "海南特产春光椰子饭538g礼盒方便食品速食原味文昌鸡味椰子饭三亚",
+    "price": "32.8",
+    "img": "https://img.alicdn.com/bao/uploaded/i3/1835819771/O1CN01rYbbyg2M3ArqJ8fut_!!2-item_pic.png"
+  },
+  {
+    "title": "科迪原生100%纯牛奶200mlx24盒整箱成人儿童学生早餐奶全脂鲜牛奶",
+    "price": "41",
+    "img": "https://img.alicdn.com/bao/uploaded/i2/1934042385/O1CN01xAtTEj1TUNMre68D8_!!1934042385.jpg"
+  },
+  {
+    "title": "小鱼桌游Wards二战卡牌桌游实体盲盒卡包零售收藏对战潮玩Kards",
+    "price": "19.7",
+    "img": "https://img.alicdn.com/bao/uploaded/i1/2266976084/O1CN019OJg8y1uoWZc6b0IC_!!2266976084.jpg"
+  },
+  {
+    "title": "KDL826泰坦电视人3.0闪电马桶人监控音响人儿童益智拼装积木玩具",
+    "price": "13",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/2215721772656/O1CN017BLrnt1VUUupmDfQT_!!2215721772656.jpg"
+  },
+  {
+    "title": "康佳筋膜枪肌肉按摩器仪迷你专业级肌膜抢mini男女电动放松颈膜枪",
+    "price": "309",
+    "img": "https://img.alicdn.com/bao/uploaded/i1/2208772006571/O1CN0101coaj1yPZPX2F6cY_!!0-item_pic.jpg"
+  },
+  {
+    "title": "垃圾桶家用厕所纸桶卫生间带盖大容量卫生桶夹缝壁挂客厅厨房纸篓",
+    "price": "8.5",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/2453904443/O1CN01hXklUr1igwdlpR78l_!!0-item_pic.jpg"
+  },
+  {
+    "title": "四季折叠加厚床垫地垫睡觉打地铺隔凉榻榻米软垫儿童爬行垫子家用",
+    "price": "55",
+    "img": "https://img.alicdn.com/bao/uploaded/i1/35934976/O1CN01CwwdAy1md3WNrowBb_!!35934976.jpg"
+  },
+  {
+    "title": "卫生间厕纸盒洗脸巾收纳盒壁挂式厕所纸巾盒抽纸高级感创意卷纸盒",
+    "price": "23.9",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/1038632524/O1CN01IDiFqD1UW2YmSb2Hg_!!1038632524.jpg"
+  },
+  {
+    "title": "初高中大学生行楷手写体练字帖女生漂亮字体成人励志语录央视文案",
+    "price": "21.8",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/2212268962601/O1CN01JQcscj1V5J5v4Cqte_!!0-item_pic.jpg"
+  },
+  {
+    "title": "小贝熊辅食机婴儿宝宝辅食工具套装料理机研磨打泥神器多功能",
+    "price": "79",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/2206212642944/O1CN01XQxrRC1XcOzAqVQDI_!!0-item_pic.jpg"
+  },
+  {
+    "title": "新房酒柜装饰品摆件家居招财猫客厅玄关电视柜工艺品乔迁新居礼物",
+    "price": "23",
+    "img": "https://img.alicdn.com/bao/uploaded/i3/2200705146448/O1CN015XyInx1xVElNX6Sdm_!!0-item_pic.jpg"
+  },
+  {
+    "title": "宝宝爬行垫加厚婴儿爬爬垫家用无毒无味定制拼接折叠儿童泡沫地垫",
+    "price": "9.8",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/1016568762/O1CN019ac1bE2Eb3JUcSojh_!!0-item_pic.jpg"
+  },
+  {
+    "title": "海南特产春光椰子饭538g礼盒方便食品速食原味文昌鸡味椰子饭三亚",
+    "price": "32.8",
+    "img": "https://img.alicdn.com/bao/uploaded/i3/1835819771/O1CN01rYbbyg2M3ArqJ8fut_!!2-item_pic.png"
+  },
+  {
+    "title": "科迪原生100%纯牛奶200mlx24盒整箱成人儿童学生早餐奶全脂鲜牛奶",
+    "price": "41",
+    "img": "https://img.alicdn.com/bao/uploaded/i2/1934042385/O1CN01xAtTEj1TUNMre68D8_!!1934042385.jpg"
+  },
+  {
+    "title": "小鱼桌游Wards二战卡牌桌游实体盲盒卡包零售收藏对战潮玩Kards",
+    "price": "19.7",
+    "img": "https://img.alicdn.com/bao/uploaded/i1/2266976084/O1CN019OJg8y1uoWZc6b0IC_!!2266976084.jpg"
+  },
+  {
+    "title": "KDL826泰坦电视人3.0闪电马桶人监控音响人儿童益智拼装积木玩具",
+    "price": "13",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/2215721772656/O1CN017BLrnt1VUUupmDfQT_!!2215721772656.jpg"
+  },
+  {
+    "title": "康佳筋膜枪肌肉按摩器仪迷你专业级肌膜抢mini男女电动放松颈膜枪",
+    "price": "309",
+    "img": "https://img.alicdn.com/bao/uploaded/i1/2208772006571/O1CN0101coaj1yPZPX2F6cY_!!0-item_pic.jpg"
+  },
+  {
+    "title": "垃圾桶家用厕所纸桶卫生间带盖大容量卫生桶夹缝壁挂客厅厨房纸篓",
+    "price": "8.5",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/2453904443/O1CN01hXklUr1igwdlpR78l_!!0-item_pic.jpg"
+  },
+  {
+    "title": "四季折叠加厚床垫地垫睡觉打地铺隔凉榻榻米软垫儿童爬行垫子家用",
+    "price": "55",
+    "img": "https://img.alicdn.com/bao/uploaded/i1/35934976/O1CN01CwwdAy1md3WNrowBb_!!35934976.jpg"
+  },
+  {
+    "title": "卫生间厕纸盒洗脸巾收纳盒壁挂式厕所纸巾盒抽纸高级感创意卷纸盒",
+    "price": "23.9",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/1038632524/O1CN01IDiFqD1UW2YmSb2Hg_!!1038632524.jpg"
+  },
+  {
+    "title": "初高中大学生行楷手写体练字帖女生漂亮字体成人励志语录央视文案",
+    "price": "21.8",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/2212268962601/O1CN01JQcscj1V5J5v4Cqte_!!0-item_pic.jpg"
+  },
+  {
+    "title": "小贝熊辅食机婴儿宝宝辅食工具套装料理机研磨打泥神器多功能",
+    "price": "79",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/2206212642944/O1CN01XQxrRC1XcOzAqVQDI_!!0-item_pic.jpg"
+  },
+  {
+    "title": "新房酒柜装饰品摆件家居招财猫客厅玄关电视柜工艺品乔迁新居礼物",
+    "price": "23",
+    "img": "https://img.alicdn.com/bao/uploaded/i3/2200705146448/O1CN015XyInx1xVElNX6Sdm_!!0-item_pic.jpg"
+  },
+  {
+    "title": "宝宝爬行垫加厚婴儿爬爬垫家用无毒无味定制拼接折叠儿童泡沫地垫",
+    "price": "9.8",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/1016568762/O1CN019ac1bE2Eb3JUcSojh_!!0-item_pic.jpg"
+  },
+  {
+    "title": "海南特产春光椰子饭538g礼盒方便食品速食原味文昌鸡味椰子饭三亚",
+    "price": "32.8",
+    "img": "https://img.alicdn.com/bao/uploaded/i3/1835819771/O1CN01rYbbyg2M3ArqJ8fut_!!2-item_pic.png"
+  },
+  {
+    "title": "科迪原生100%纯牛奶200mlx24盒整箱成人儿童学生早餐奶全脂鲜牛奶",
+    "price": "41",
+    "img": "https://img.alicdn.com/bao/uploaded/i2/1934042385/O1CN01xAtTEj1TUNMre68D8_!!1934042385.jpg"
+  },
+  {
+    "title": "小鱼桌游Wards二战卡牌桌游实体盲盒卡包零售收藏对战潮玩Kards",
+    "price": "19.7",
+    "img": "https://img.alicdn.com/bao/uploaded/i1/2266976084/O1CN019OJg8y1uoWZc6b0IC_!!2266976084.jpg"
+  },
+  {
+    "title": "KDL826泰坦电视人3.0闪电马桶人监控音响人儿童益智拼装积木玩具",
+    "price": "13",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/2215721772656/O1CN017BLrnt1VUUupmDfQT_!!2215721772656.jpg"
+  },
+  {
+    "title": "康佳筋膜枪肌肉按摩器仪迷你专业级肌膜抢mini男女电动放松颈膜枪",
+    "price": "309",
+    "img": "https://img.alicdn.com/bao/uploaded/i1/2208772006571/O1CN0101coaj1yPZPX2F6cY_!!0-item_pic.jpg"
+  },
+  {
+    "title": "垃圾桶家用厕所纸桶卫生间带盖大容量卫生桶夹缝壁挂客厅厨房纸篓",
+    "price": "8.5",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/2453904443/O1CN01hXklUr1igwdlpR78l_!!0-item_pic.jpg"
+  },
+  {
+    "title": "四季折叠加厚床垫地垫睡觉打地铺隔凉榻榻米软垫儿童爬行垫子家用",
+    "price": "55",
+    "img": "https://img.alicdn.com/bao/uploaded/i1/35934976/O1CN01CwwdAy1md3WNrowBb_!!35934976.jpg"
+  },
+  {
+    "title": "卫生间厕纸盒洗脸巾收纳盒壁挂式厕所纸巾盒抽纸高级感创意卷纸盒",
+    "price": "23.9",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/1038632524/O1CN01IDiFqD1UW2YmSb2Hg_!!1038632524.jpg"
+  },
+  {
+    "title": "初高中大学生行楷手写体练字帖女生漂亮字体成人励志语录央视文案",
+    "price": "21.8",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/2212268962601/O1CN01JQcscj1V5J5v4Cqte_!!0-item_pic.jpg"
+  },
+  {
+    "title": "小贝熊辅食机婴儿宝宝辅食工具套装料理机研磨打泥神器多功能",
+    "price": "79",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/2206212642944/O1CN01XQxrRC1XcOzAqVQDI_!!0-item_pic.jpg"
+  },
+  {
+    "title": "新房酒柜装饰品摆件家居招财猫客厅玄关电视柜工艺品乔迁新居礼物",
+    "price": "23",
+    "img": "https://img.alicdn.com/bao/uploaded/i3/2200705146448/O1CN015XyInx1xVElNX6Sdm_!!0-item_pic.jpg"
+  },
+  {
+    "title": "宝宝爬行垫加厚婴儿爬爬垫家用无毒无味定制拼接折叠儿童泡沫地垫",
+    "price": "9.8",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/1016568762/O1CN019ac1bE2Eb3JUcSojh_!!0-item_pic.jpg"
+  },
+  {
+    "title": "海南特产春光椰子饭538g礼盒方便食品速食原味文昌鸡味椰子饭三亚",
+    "price": "32.8",
+    "img": "https://img.alicdn.com/bao/uploaded/i3/1835819771/O1CN01rYbbyg2M3ArqJ8fut_!!2-item_pic.png"
+  },
+  {
+    "title": "科迪原生100%纯牛奶200mlx24盒整箱成人儿童学生早餐奶全脂鲜牛奶",
+    "price": "41",
+    "img": "https://img.alicdn.com/bao/uploaded/i2/1934042385/O1CN01xAtTEj1TUNMre68D8_!!1934042385.jpg"
+  },
+  {
+    "title": "小鱼桌游Wards二战卡牌桌游实体盲盒卡包零售收藏对战潮玩Kards",
+    "price": "19.7",
+    "img": "https://img.alicdn.com/bao/uploaded/i1/2266976084/O1CN019OJg8y1uoWZc6b0IC_!!2266976084.jpg"
+  },
+  {
+    "title": "KDL826泰坦电视人3.0闪电马桶人监控音响人儿童益智拼装积木玩具",
+    "price": "13",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/2215721772656/O1CN017BLrnt1VUUupmDfQT_!!2215721772656.jpg"
+  },
+  {
+    "title": "康佳筋膜枪肌肉按摩器仪迷你专业级肌膜抢mini男女电动放松颈膜枪",
+    "price": "309",
+    "img": "https://img.alicdn.com/bao/uploaded/i1/2208772006571/O1CN0101coaj1yPZPX2F6cY_!!0-item_pic.jpg"
+  },
+  {
+    "title": "垃圾桶家用厕所纸桶卫生间带盖大容量卫生桶夹缝壁挂客厅厨房纸篓",
+    "price": "8.5",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/2453904443/O1CN01hXklUr1igwdlpR78l_!!0-item_pic.jpg"
+  },
+  {
+    "title": "四季折叠加厚床垫地垫睡觉打地铺隔凉榻榻米软垫儿童爬行垫子家用",
+    "price": "55",
+    "img": "https://img.alicdn.com/bao/uploaded/i1/35934976/O1CN01CwwdAy1md3WNrowBb_!!35934976.jpg"
+  },
+  {
+    "title": "卫生间厕纸盒洗脸巾收纳盒壁挂式厕所纸巾盒抽纸高级感创意卷纸盒",
+    "price": "23.9",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/1038632524/O1CN01IDiFqD1UW2YmSb2Hg_!!1038632524.jpg"
+  },
+  {
+    "title": "初高中大学生行楷手写体练字帖女生漂亮字体成人励志语录央视文案",
+    "price": "21.8",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/2212268962601/O1CN01JQcscj1V5J5v4Cqte_!!0-item_pic.jpg"
+  },
+  {
+    "title": "小贝熊辅食机婴儿宝宝辅食工具套装料理机研磨打泥神器多功能",
+    "price": "79",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/2206212642944/O1CN01XQxrRC1XcOzAqVQDI_!!0-item_pic.jpg"
+  },
+  {
+    "title": "新房酒柜装饰品摆件家居招财猫客厅玄关电视柜工艺品乔迁新居礼物",
+    "price": "23",
+    "img": "https://img.alicdn.com/bao/uploaded/i3/2200705146448/O1CN015XyInx1xVElNX6Sdm_!!0-item_pic.jpg"
+  },
+  {
+    "title": "宝宝爬行垫加厚婴儿爬爬垫家用无毒无味定制拼接折叠儿童泡沫地垫",
+    "price": "9.8",
+    "img": "https://img.alicdn.com/bao/uploaded/i4/1016568762/O1CN019ac1bE2Eb3JUcSojh_!!0-item_pic.jpg"
+  },
+  {
+    "title": "海南特产春光椰子饭538g礼盒方便食品速食原味文昌鸡味椰子饭三亚",
+    "price": "32.8",
+    "img": "https://img.alicdn.com/bao/uploaded/i3/1835819771/O1CN01rYbbyg2M3ArqJ8fut_!!2-item_pic.png"
+  },
+  {
+    "title": "科迪原生100%纯牛奶200mlx24盒整箱成人儿童学生早餐奶全脂鲜牛奶",
+    "price": "41",
+    "img": "https://img.alicdn.com/bao/uploaded/i2/1934042385/O1CN01xAtTEj1TUNMre68D8_!!1934042385.jpg"
+  }
+]
+ 
+    const initM = (ctx,size) => {
+        let i = 0 , data_idx = 0
+        const m_arr = new Array(Math.floor(canvasM.width * canvasM.height / (size*size)))
+        ctxM.clearRect(0,0,canvasM.width,canvasM.height);  
+        for(let y = 0 ; y <= canvasM.height ; y += size){
+            for(let x = 0 ; x <= canvasM.width ; x += size){
+                let index = i
+                m_arr[i] = new Image()
+                if(data_idx == data.length){
+                    data_idx = 0
+                }
+                m_arr[i].src = data[data_idx].img;
+                m_arr[i].onload = () => {
+                    // console.log(index)
+                    if(index < m_arr.length){
+                        // console.log(index)
+                        ctx.drawImage(m_arr[index],x,y,size,size)
+                    }
+                }
+                i++
+                data_idx++
+            }
+        }
+
+    }
+
+    const decrementOpactiy = (ctx,w,h) => {
+        const imgdata = ctx.getImageData(0,0,w,h);
+        const pixel = imgdata.data;
+        for(let i = 0 ; i<pixel.length ; i+=4){
+            pixel[i+3] = 190
+        }
+        ctx.putImageData(imgdata,0,0)
+    }
+
+    var zoomctx = document.getElementById('zoom').getContext('2d');
+    var zoom = function(event) {
+        ctxM.imageSmoothingEnabled = this.checked;
+        ctxM.mozImageSmoothingEnabled = this.checked;
+        ctxM.webkitImageSmoothingEnabled = this.checked;
+        ctxM.msImageSmoothingEnabled = this.checked;
+        var x = event.layerX;
+        var y = event.layerY;
+        zoomctx.drawImage(canvasM,
+                        Math.abs(x - 5),
+                        Math.abs(y - 5),
+                        m_size, m_size,
+                        0, 0,
+                        150, 150);
+    };
+
+    document.getElementById("changesize").addEventListener("change",e => {
+        // console.log(e.target.value)
+        m_size = e.target.value
+        initM(ctxM,parseInt(m_size))
+    }) 
+}
+
+
+
+</script>
